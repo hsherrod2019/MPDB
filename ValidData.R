@@ -2,7 +2,7 @@
 library(RMariaDB)
 library(DBI)
 library(RMySQL)
-library(dplyr)
+library(dplyr) 
 
 # Create a database connection
 con <- dbConnect(

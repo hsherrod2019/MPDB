@@ -1,0 +1,11 @@
+﻿IDParticles,ImageFile,Preferred_method,ImageType,ResearcherName,Affiliation,Citation,InstrumentName,AnalysisDate,Amount,Analyst,PolymerTypeOfParticle,PolymerTypeOfParticleOriginal,Magnification,Color,ColorOriginal,Morphology,MorphologyOriginal,SizeOfParticle,SizeDimension,MicroplasticImages,,,,particles,institution
+-99,photo.jpg,-99,SEM,Charles Moore and Gwen Lattin,Moore Institute for Plastic Pollution Research,"Lattin and Moore 2020, Interlab Comparison Study Data, Moore Institute for Plastic Pollution Research",Nikon SMZ1270,2020-01-01,1,-99,,,60-80x,Green,Green,Sphere,Sphere,>500 um,Nominal,ALGALITA_CW_3_above500_30.jpeg,,,,"INSERT INTO particles (Sample, Analysis_date, Colour, Shape, Size_fraction) VALUES ('photo.jpg', '43831' , 'Green' , 'Sphere",
+-99,photo1.jpg,-99,Visual,Fadare and Conkle,Texas A&M University-Corpus Christi,"Fadare and Conkle 2022, Taxonomy of Environmentally Weathered Microplastics",,2022-01-01,1,-99,Polyethylene,Polyethylene,7-10x,Yellow,Yellow,Bead,Bead,<500 um,Nominal,B_DW_3_above500_96.jpeg,,,,"INSERT INTO particles (Sample, Analysis_date, Colour, Shape, Size_fraction) VALUES ('photo1.jpg', '44562' , 'Yellow' , 'Bead",
+-99,photo2.jpg,-99,Fluorescence,Anna Kukkola,University of Birmingham,Kukkola et al. 2022,Olympus MVX-ZB10,2022-01-01,1,-99,,,32x,Grey,Grey,Fragment,Fragment,>500,ferret diameter,CC_CW_1_20-250_176.jpeg,,,,"INSERT INTO particles (Sample, Analysis_date, Colour, Shape, Size_fraction) VALUES ('photo2.jpg', '44562' , 'Grey' , 'Fragment",
+,,,,,,,,,,,,,,,,,,,,,,,,"INSERT INTO particles (Sample, Analysis_date, Colour, Shape, Size_fraction) VALUES ('', '' , '' , '",
+,,,,,,,,,,,,,,,,,,,,,,,,"INSERT INTO particles (Sample, Analysis_date, Colour, Shape, Size_fraction) VALUES ('', '' , '' , '",
+,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,"INSERT INTO particles (IDParticles, Sample, Preferred_method, Analysis_date, Amount, Analyst, Size_fraction, Colour, Shape, Categorised_result) VALUES ('-99', 'photo.jpg', '43831' , 'Green' , 'Sphere",
