@@ -1,105 +1,186 @@
 # Load the libraries
 library(RMariaDB)
+library(DBI)
 library(RMySQL)
 library(dplyr)
-
-sql_dump <- readLines("micropoll-.sql")
-
-# Define database connection details
-host <- "127.0.0.1"
-dbname <- "micropoll"
-user <- "root"
-pass <- "Mooreplastic1010!"
 
 # Create a database connection
 con <- dbConnect(
   MariaDB(),
   dbname = dbname,
   host = host,
+  port = port,
   user = user,
   password = pass
 )
 
+# Enter data
+data <- read.csv("Copy of Copy of Image Data Sharing (Responses) - Form Responses.csv", stringsAsFactors = FALSE)
 
-# Read in data
-data <- read.csv("image_explorer_example_data1.csv")
+# Replace empty or NA values with "NA"
 data <- data %>%
-  select(-PolymerTypeOfParticle, -PolymerTypeOfParticleOriginal, -ColorOriginal, -MorphologyOriginal)
+  mutate_all(~ ifelse(is.na(.x) | .x == "", "NA", .x))
 
-# Rename the columns to match sql column
+### Inserting data into mysql ###
 
-# Particles table
-colnames(data)[colnames(data) == "ImageType"] <- "IDParticles"
-colnames(data)[colnames(data) == "ImageFile"] <- "Sample"
-colnames(data)[colnames(data) == "ResearcherName"] <- "Analyst"
-colnames(data)[colnames(data) == "AnalysisDate"] <- "Analysis_date"
-colnames(data)[colnames(data) == "Color"] <- "Colour"
-colnames(data)[colnames(data) == "Morphology"] <- "Shape"
-colnames(data)[colnames(data) == "SizeOfParticle"] <- "Size_1_[µm]"
+# Read in "colors" table
+colors <- data %>%
+  select(Color) %>%
+  mutate(IDColor = row_number())
+colors <- head(colors, n = 26)
 
-# Contributor table
-colnames(data)[colnames(data) == "Affiliation"] <- "Institution"
-colnames(data)[colnames(data) == "Citation"] <- "IDContributor"
+dbWriteTable(con, name = "colors", value = colors, append = TRUE, row.names = FALSE)
 
-# Equipment table
-colnames(data)[colnames(data) == "InstrumentName"] <- "Eq_Name"
-colnames(data)[colnames(data) == "Magnification"] <- "Eq_Specification"
+# Read in "contributors" table
+contributors <- data %>%
+  select(Fisrt_name, Last_name) %>%
+  mutate(IDContributor = row_number())
+contributors <- head(contributors, n = 26)
 
-# Size Fraction table
-colnames(data)[colnames(data) == "SizeDimension"] <- "Size_category"
+dbWriteTable(con, name = "contributor", value = contributors, append = TRUE, row.names = FALSE)
 
-# Methods table
-colnames(data)[colnames(data) == "MicroplasticImages"] <- "Images"
+# Read in "size_fraction" table
+size_fraction <- data %>%
+  select(Size_fraction, Size_range_from_μm, Size_range_to_μm) %>%
+  mutate(IDSize = row_number())
 
-# Define SQL statements for each table
-sql_insert_particles <- "INSERT INTO particles (IDParticles, Sample, Preferred_method, Arrival_date, Analysis_date, Amount, Analyst, Size_fraction, Colour, Shape, `Size_1_[µm]`, `Size_2_[µm]`, `Size_3_[µm]`, Categorised_result, Indication_paint, Particle_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-sql_insert_contributor <- "INSERT INTO contributor (Institution, IDContributor) VALUES (?, ?)"
-sql_insert_equipment <- "INSERT INTO equipment (Eq_Name, Eq_Specification) VALUES (?, ?)"
-sql_insert_size <- "INSERT INTO size (Size_category) VALUES (?)"
-sql_insert_methods <- "INSERT INTO methods (Images) VALUES (?)"
+size_fraction <- size_fraction %>%
+  rename(Size_category = Size_fraction)
+size_fraction <- head(size_fraction, n = 26)
 
-# Initialize a result variable
-result <- TRUE
-  
-# Execute INSERT statements with data
-for (i in 1:nrow(data)) {
-  params <- unlist(data[i, ])
-  if (!dbExecute(con, sql_insert_particles, params)) {
-    result <- FALSE
-    break  # Exit the loop on error
-  }
-  
-  if (!dbExecute(con, sql_insert_contributor, params)) {
-    result <- FALSE
-    break
-  }
-  
-  if (!dbExecute(con, sql_insert_equipment, params)) {
-    result <- FALSE
-    break
-  }
-  
-  if (!dbExecute(con, sql_insert_size, params)) {
-    result <- FALSE
-    break
-  }
-  
-  if (!dbExecute(con, sql_insert_methods, params)) {
-    result <- FALSE
-    break
-  }
-}
+dbWriteTable(con, name = "size_fraction", value = size_fraction, append = TRUE, row.names = FALSE)
 
-# Close the database connection
-tryCatch({
-  dbDisconnect(con)
-}, error = function(e) {
-  cat("Error closing database connection.\n")
-})
+# Read in "shape" table
+shape <- data %>%
+  select(Shape) %>%
+  mutate(IDShape = row_number())
+shape <- head(shape, n = 26)
 
-# Check if data was inserted successfully
-if (result) {
-  cat("Data was inserted successfully.\n")
-} else {
-  cat("Error inserting data.\n")
-}
+dbWriteTable(con, name = "shape", value = shape, append = TRUE, row.names = FALSE)
+
+# Read in "method_category" table
+method_category <- data %>%
+  select(Category) %>%
+  mutate(IDMethodCategory = row_number())
+method_category <- head(method_category, n = 26)
+
+dbWriteTable(con, name = "method_category", value = method_category, append = TRUE, row.names = FALSE)
+
+# Read in "methods" table
+methods <- data %>%
+  select(Method_name, Category, Images) %>%
+  mutate(IDMethod = row_number())
+methods <- head(methods, n = 26)
+
+dbWriteTable(con, name = "methods", value = methods, append = TRUE, row.names = FALSE)
+
+# Read in "projects" table
+projects <- data %>%
+  select(Project) %>%
+  mutate(IDProject = row_number(),
+         Project = paste(Project, row_number(), sep = "_"))
+
+projects <- projects %>%
+  rename(Acronym = Project)
+projects <- head(projects, n = 26)
+
+dbWriteTable(con, name = "projects", value = projects, append = TRUE, row.names = FALSE)
+
+# Read in "countries" table
+countries <- data %>%
+  select(Country) %>%
+  mutate(IDCountry = row_number())
+
+countries <- countries %>%
+  rename(CountryShort = Country)
+countries <- head(countries, n = 26)
+
+dbWriteTable(con, name = "countries", value = countries, append = TRUE, row.names = FALSE)
+
+# Read in "institution" table
+institution <- data %>%
+  select(Affiliation, Country, Institute_Acronym) %>%
+  mutate(IDInstitute = row_number())
+
+institution <- institution %>%
+  rename(Institute_Name = Affiliation,
+         InstituteCountry = Country)
+institution <- head(institution, n = 26)
+
+dbWriteTable(con, name = "institution", value = institution, append = TRUE, row.names = FALSE)
+
+# Read in "sampling_compartment" table
+sampling_compartment <- data %>%
+  select(Compartment) %>%
+  mutate(IDCompartment = row_number(),
+         Compartment = "unknown")
+sampling_compartment <- head(sampling_compartment, n = 26)
+
+dbWriteTable(con, name = "sampling_compartment", value = sampling_compartment, append = TRUE, row.names = FALSE)
+
+# Read in "samples" table
+contributor_values <- contributors$IDContributor[1:nrow(data)]
+project_values <- projects$Acronym[1:nrow(data)]
+compartment <- sampling_compartment$Compartment[1:nrow(data)]
+
+samples <- data %>%
+  select(Country, Analysis_date, Project, Compartment) %>%
+  mutate(IDSample = row_number(),
+         Sample_name = paste("Sample", 1:nrow(data)),
+         Contributor = contributor_values,
+         Project = project_values,
+         Site_name = "unknown",
+         Compartment = compartment,
+         Time = 00:00:00,
+         GPS_LON = 99.99,
+         GPS_LAT = 99.99)
+
+samples <- samples %>%
+  rename(Date = Analysis_date)
+samples <- head(samples, n = 26)
+
+dbWriteTable(con, name = "samples", value = samples, append = TRUE, row.names = FALSE)
+
+# Read in "polymer_category" table
+polymer_category <- data %>%
+  select(Categorised_result) %>%
+  mutate(IDPolymer = row_number())
+
+polymer_category <- polymer_category %>%
+  rename(Polymer_category = Categorised_result)
+polymer_category <- head(polymer_category, n = 26)
+
+dbWriteTable(con, name = "polymer_category", value = polymer_category, append = TRUE, row.names = FALSE)
+
+# Read in "particles" table
+preferred_method_values <- methods$IDMethod[1:nrow(data)]
+analyst_values <- contributors$IDContributor[1:nrow(data)]
+
+particles <- data %>%
+  select(Shape, Size_fraction, Categorised_result, Analysis_date, Color) %>%
+  mutate(IDParticles = row_number(),
+         Preferred_method = preferred_method_values,
+         Analyst = analyst_values,
+         Amount = 1,
+         Sample = paste("Sample", 1:nrow(data)))
+
+particles <- particles %>%
+  rename(Colour = Color)
+particles <- head(particles, n = 26)
+
+dbWriteTable(con, name = "particles", value = particles, append = TRUE, row.names = FALSE)
+
+# Read in "equipment" table
+equipment <- data %>%
+  select(Eq_name, Eq_specification) %>%
+  mutate(IDEquipment = row_number())
+
+equipment <- equipment %>%
+  rename(Eq_Name = Eq_name,
+         Eq_Specification = Eq_specification)
+equipment <- head(equipment, n = 26)
+
+dbWriteTable(con, name = "equipment", value = equipment, append = TRUE, row.names = FALSE)
+
+# Disconnect
+dbDisconnect(con)
