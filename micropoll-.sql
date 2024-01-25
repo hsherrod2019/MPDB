@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
 --
--- Host: 192.124.245.26    Database: micropoll
+-- Host: db-mysql-nyc3-31455-do-user-14694805-0.c.db.ondigitalocean.com    Database: defaultdb
 -- ------------------------------------------------------
 -- Server version	5.7.40-0ubuntu0.18.04.1
 
@@ -388,10 +388,12 @@ CREATE TABLE `equipment` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `flagged_particles` (
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `IDParticles` int(10) unsigned NOT NULL,
   `IDFlag` int(10) unsigned NOT NULL,
   `IDblank_particle` int(10) unsigned DEFAULT NULL,
   `IDContributor` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`ID`),
   KEY `FK_flagged_particles_particles` (`IDParticles`),
   KEY `FK_flagged_particles_flags` (`IDFlag`),
   KEY `FK_flagged_particles_particles_2` (`IDblank_particle`),
@@ -401,6 +403,7 @@ CREATE TABLE `flagged_particles` (
   CONSTRAINT `FK_flagged_particles_particles` FOREIGN KEY (`IDParticles`) REFERENCES `particles` (`IDParticles`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_flagged_particles_particles_2` FOREIGN KEY (`IDblank_particle`) REFERENCES `particles` (`IDParticles`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -544,8 +547,10 @@ CREATE TABLE `particles` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `particles2analysis` (
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `IDParticles` int(10) unsigned NOT NULL,
   `IDAnalysis` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`ID`),
   KEY `FK_particles2analysis_particles` (`IDParticles`),
   KEY `FK_particles2analysis_analysis` (`IDAnalysis`),
   CONSTRAINT `FK_particles2analysis_analysis` FOREIGN KEY (`IDAnalysis`) REFERENCES `analysis` (`IDAnalysis`) ON UPDATE CASCADE,
@@ -664,9 +669,11 @@ CREATE TABLE `projects` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `sample2methods` (
-  `IDSample` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `IDSample` int(10) unsigned NOT NULL,
   `IDMethod` int(10) unsigned NOT NULL,
   `Order` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`ID`),
   KEY `FK_sample2methods_samples` (`IDSample`),
   KEY `FK_sample2methods_methods` (`IDMethod`),
   CONSTRAINT `FK_sample2methods_methods` FOREIGN KEY (`IDMethod`) REFERENCES `methods` (`IDMethod`),

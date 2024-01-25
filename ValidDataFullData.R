@@ -27,15 +27,18 @@ data <- data %>%
 colors <- data %>%
   select(Color) %>%
   mutate(IDColor = row_number())
-colors <- head(colors, n = 26)
 
+# Clears any data previously in the table before adding initial dataset
+dbExecute(con, "DELETE FROM colors")
+# Insert the entire dataset without overwriting
 dbWriteTable(con, name = "colors", value = colors, append = TRUE, row.names = FALSE)
+
 
 # Read in "contributors" table
 contributors <- data %>%
   select(Fisrt_name, Last_name) %>%
   mutate(IDContributor = row_number())
-contributors <- head(contributors, n = 26)
+
 
 dbWriteTable(con, name = "contributor", value = contributors, append = TRUE, row.names = FALSE)
 
@@ -46,7 +49,7 @@ size_fraction <- data %>%
 
 size_fraction <- size_fraction %>%
   rename(Size_category = Size_fraction)
-size_fraction <- head(size_fraction, n = 26)
+
 
 dbWriteTable(con, name = "size_fraction", value = size_fraction, append = TRUE, row.names = FALSE)
 
@@ -54,7 +57,7 @@ dbWriteTable(con, name = "size_fraction", value = size_fraction, append = TRUE, 
 shape <- data %>%
   select(Shape) %>%
   mutate(IDShape = row_number())
-shape <- head(shape, n = 26)
+
 
 dbWriteTable(con, name = "shape", value = shape, append = TRUE, row.names = FALSE)
 
@@ -62,7 +65,7 @@ dbWriteTable(con, name = "shape", value = shape, append = TRUE, row.names = FALS
 method_category <- data %>%
   select(Category) %>%
   mutate(IDMethodCategory = row_number())
-method_category <- head(method_category, n = 26)
+
 
 dbWriteTable(con, name = "method_category", value = method_category, append = TRUE, row.names = FALSE)
 
@@ -70,7 +73,7 @@ dbWriteTable(con, name = "method_category", value = method_category, append = TR
 methods <- data %>%
   select(Method_name, Category, Images) %>%
   mutate(IDMethod = row_number())
-methods <- head(methods, n = 26)
+
 
 dbWriteTable(con, name = "methods", value = methods, append = TRUE, row.names = FALSE)
 
@@ -82,7 +85,7 @@ projects <- data %>%
 
 projects <- projects %>%
   rename(Acronym = Project)
-projects <- head(projects, n = 26)
+
 
 dbWriteTable(con, name = "projects", value = projects, append = TRUE, row.names = FALSE)
 
@@ -93,7 +96,7 @@ countries <- data %>%
 
 countries <- countries %>%
   rename(CountryShort = Country)
-countries <- head(countries, n = 26)
+
 
 dbWriteTable(con, name = "countries", value = countries, append = TRUE, row.names = FALSE)
 
@@ -105,7 +108,7 @@ institution <- data %>%
 institution <- institution %>%
   rename(Institute_Name = Affiliation,
          InstituteCountry = Country)
-institution <- head(institution, n = 26)
+
 
 dbWriteTable(con, name = "institution", value = institution, append = TRUE, row.names = FALSE)
 
@@ -114,7 +117,7 @@ sampling_compartment <- data %>%
   select(Compartment) %>%
   mutate(IDCompartment = row_number(),
          Compartment = "unknown")
-sampling_compartment <- head(sampling_compartment, n = 26)
+
 
 dbWriteTable(con, name = "sampling_compartment", value = sampling_compartment, append = TRUE, row.names = FALSE)
 
@@ -137,7 +140,7 @@ samples <- data %>%
 
 samples <- samples %>%
   rename(Date = Analysis_date)
-samples <- head(samples, n = 26)
+
 
 dbWriteTable(con, name = "samples", value = samples, append = TRUE, row.names = FALSE)
 
@@ -148,7 +151,7 @@ polymer_category <- data %>%
 
 polymer_category <- polymer_category %>%
   rename(Polymer_category = Categorised_result)
-polymer_category <- head(polymer_category, n = 26)
+
 
 dbWriteTable(con, name = "polymer_category", value = polymer_category, append = TRUE, row.names = FALSE)
 
@@ -166,7 +169,7 @@ particles <- data %>%
 
 particles <- particles %>%
   rename(Colour = Color)
-particles <- head(particles, n = 26)
+
 
 dbWriteTable(con, name = "particles", value = particles, append = TRUE, row.names = FALSE)
 
@@ -178,7 +181,7 @@ equipment <- data %>%
 equipment <- equipment %>%
   rename(Eq_Name = Eq_name,
          Eq_Specification = Eq_specification)
-equipment <- head(equipment, n = 26)
+
 
 dbWriteTable(con, name = "equipment", value = equipment, append = TRUE, row.names = FALSE)
 
